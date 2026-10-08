@@ -1,0 +1,85 @@
+<!--
+  首页：看 + 记，只做这两件事。
+  结构依据 docs/需求与设计说明.md §5.2
+-->
+<view class="page {{scaleClass}}">
+
+  <!-- 首启调字号提示条：不弹窗打断，只是给个出口 [S10] -->
+  <view class="tip-bar" wx:if="{{showScaleTip}}">
+    <view class="tip-text">字太小看不清？可以去调大</view>
+    <view class="tip-close" bindtap="goSettings" hover-class="hover">去调</view>
+  </view>
+
+  <!-- 找一找（搜索） -->
+  <view class="search-wrap">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="找一找"
+        placeholder-class="search-ph"
+        confirm-type="search"
+        bindinput="onSearch"
+      />
+      <text class="search-clear" wx:if="{{keyword}}" bindtap="clearSearch">清空</text>
+    </view>
+  </view>
+
+  <!-- 今天要做的事：小程序里唯一 100% 可靠的提醒形态 [S7] -->
+  <block wx:if="{{!keyword}}">
+    <view wx:if="{{todayList.length > 0}}">
+      <view class="section-title"><text class="t-section">今天要做的事</text></view>
+      <view
+        wx:for="{{todayList}}"
+        wx:key="id"
+        class="card item"
+        data-id="{{item.id}}"
+        bindtap="openDetail"
+        hover-class="hover"
+      >
+        <view class="t-title note-line">{{item.title}}</view>
+        <view class="t-aux time-line" wx:if="{{item.timeText || item.overdue}}">
+          <text wx:if="{{item.timeText}}">{{item.timeText}}</text>
+          <!-- 状态不只靠颜色区分，必须有文字 [S2][S4] -->
+          <text wx:if="{{item.overdue}}" class="tag-overdue">已过</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 记过的 -->
+  <view wx:if="{{otherList.length > 0}}">
+    <view class="section-title" wx:if="{{!keyword}}"><text class="t-section">记过的</text></view>
+    <view
+      wx:for="{{otherList}}"
+      wx:key="id"
+      class="card item"
+      data-id="{{item.id}}"
+      bindtap="openDetail"
+      hover-class="hover"
+    >
+      <view class="t-title note-line">{{item.title}}</view>
+      <view class="t-aux time-line" wx:if="{{item.timeText || item.overdue}}">
+        <text wx:if="{{item.timeText}}">{{item.timeText}}</text>
+        <text wx:if="{{item.overdue}}" class="tag-overdue">已过</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态：明确告诉老人下一步干什么 [S12] -->
+  <view wx:if="{{todayList.length === 0 && otherList.length === 0}}" class="t-empty">
+    <block wx:if="{{keyword}}">没有找到。换个词再试试。</block>
+    <block wx:else>还没有记过东西。点下面这个大按钮，记第一条。</block>
+  </view>
+
+  <!-- 底部主按钮，固定在拇指区 -->
+  <view class="btn btn-main btn-fixed" bindtap="goEdit" hover-class="hover">＋ 记一条</view>
+
+  <!-- 删除后的撤销条：可逆操作不弹确认框 [S9][S10] -->
+  <view class="undo-bar" wx:if="{{undoTitle}}">
+    <view class="undo-text">刚删掉了「{{undoTitle}}」</view>
+    <view class="undo-btn" bindtap="undoDelete" hover-class="hover">找回来</view>
+  </view>
+
+</view>

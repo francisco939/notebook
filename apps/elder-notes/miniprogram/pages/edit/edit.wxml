@@ -1,0 +1,64 @@
+<!--
+  记一页 / 改一页（同一页两种模式）
+  结构依据 docs/需求与设计说明.md §5.3
+
+  要点：
+   - 标签在输入框外面，不用 placeholder 承担说明（老人不知道 placeholder 会消失）[S17]
+   - 语音不自建 ASR，只引导用输入法话筒 [S8]
+   - 时间可空，不强制填写 [S6]
+-->
+<view class="page {{scaleClass}}">
+
+  <view class="field-label"><text class="t-section">要记什么？</text></view>
+  <view class="input-card">
+    <textarea
+      class="content-input"
+      value="{{content}}"
+      bindinput="onContent"
+      maxlength="-1"
+      show-confirm-bar="{{false}}"
+      cursor-spacing="40"
+      placeholder=""
+    />
+  </view>
+
+  <!-- 语音引导：不自建识别，引导用手机输入法自带的话筒 [S8] -->
+  <view class="voice-tip">
+    <text class="t-aux">💬 点键盘上的话筒，说话就能变成字</text>
+  </view>
+
+  <view class="field-label">
+    <text class="t-section">什么时候？</text>
+    <text class="t-aux field-tip">（可以不填）</text>
+  </view>
+  <view class="input-card-sm">
+    <input
+      class="when-input"
+      value="{{rawTime}}"
+      bindinput="onWhen"
+      placeholder="比如：明天下午三点"
+      placeholder-class="when-ph"
+      cursor-spacing="40"
+    />
+  </view>
+
+  <!-- 三个快捷词，替代老人不会用的日期滚轮 -->
+  <view class="quick-row">
+    <view class="quick-btn" data-w="今天" bindtap="pickQuick" hover-class="hover">今天</view>
+    <view class="quick-btn" data-w="明天" bindtap="pickQuick" hover-class="hover">明天</view>
+    <view class="quick-btn" data-w="后天" bindtap="pickQuick" hover-class="hover">后天</view>
+  </view>
+
+  <!-- 解析结果即时反馈：让老人知道系统看懂了没有 [S12] -->
+  <view class="parsed-hint" wx:if="{{parsedText}}">
+    <text class="t-aux">看懂了：{{parsedText}}</text>
+  </view>
+  <view class="parsed-hint" wx:elif="{{showUnparsed}}">
+    <text class="t-aux">时间没看懂，没关系，照样能记下来。</text>
+  </view>
+
+  <view class="btn btn-main btn-fixed" bindtap="save" hover-class="hover">
+    {{isEdit ? '改好了' : '记好了'}}
+  </view>
+
+</view>

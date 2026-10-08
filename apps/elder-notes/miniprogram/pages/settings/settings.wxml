@@ -1,0 +1,35 @@
+<!--
+  设置页：只放真正能用的东西。
+  原则：绝不放"点了没反应"的按钮——第一版的教训就是按钮在、功能不通。
+  云端备份等真正做完再加进来，不提前占位。
+-->
+<view class="page {{scaleClass}}">
+
+  <view class="field-label"><text class="t-section">字的大小</text></view>
+
+  <view class="card item scale-opt {{scale === 'small' ? 'on' : ''}}" data-s="small" bindtap="pickScale" hover-class="hover">
+    <text class="t-body preview-small">小</text>
+    <text class="t-aux preview-small-note">记得</text>
+    <text class="t-title check" wx:if="{{scale === 'small'}}">✓ 正在用</text>
+  </view>
+
+  <view class="card item scale-opt {{scale === 'large' ? 'on' : ''}}" data-s="large" bindtap="pickScale" hover-class="hover">
+    <text class="t-body preview-large">大</text>
+    <text class="t-aux preview-large-note">记得</text>
+    <text class="t-title check" wx:if="{{scale === 'large'}}">✓ 正在用</text>
+  </view>
+
+  <view class="card item scale-opt {{scale === 'xlarge' ? 'on' : ''}}" data-s="xlarge" bindtap="pickScale" hover-class="hover">
+    <text class="t-body preview-xlarge">特大</text>
+    <text class="t-aux preview-xlarge-note">记得</text>
+    <text class="t-title check" wx:if="{{scale === 'xlarge'}}">✓ 正在用</text>
+  </view>
+
+  <view class="field-label"><text class="t-section">关于</text></view>
+  <view class="card">
+    <view class="t-body">记得</view>
+    <view class="t-aux about-note">记下来，别忘了，找得到。</view>
+    <view class="t-aux about-note">记的东西都在这台手机里，不上传给别人看。</view>
+  </view>
+
+</view>

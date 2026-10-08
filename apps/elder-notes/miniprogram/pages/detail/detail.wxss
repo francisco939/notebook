@@ -1,0 +1,46 @@
+/* 看一页 */
+
+.detail-card {
+  margin: var(--gap-lg) var(--pad);
+  padding: var(--gap-lg);
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+}
+
+/* 正文用最大字号展示——这是这一页唯一的目的 */
+.detail-content {
+  line-height: 1.6;
+  white-space: pre-wrap;   /* 保留换行，老人分段写的东西要原样显示 */
+}
+
+.when-row {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--pad) var(--gap-lg);
+}
+
+.tag-overdue {
+  margin-left: 16rpx;
+  padding: 2rpx 12rpx;
+  border: 2rpx solid var(--c-danger);
+  border-radius: 8rpx;
+  color: var(--c-danger);
+  font-size: var(--fs-aux);
+}
+
+/* 底部并排两个大按钮，固定在拇指区 */
+.btn-row {
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 48rpx;
+  display: flex;
+  z-index: 10;
+}
+.btn-half {
+  flex: 1;
+  padding: 0 16rpx;
+}
+.btn-half + .btn-half { margin-left: var(--gap); }

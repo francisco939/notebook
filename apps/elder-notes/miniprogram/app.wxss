@@ -1,0 +1,226 @@
+/**
+ * 记得 · 全局样式与设计 token
+ *
+ * 所有数值的依据见 docs/需求与设计说明.md §6。改这里之前先看文档，别凭手感调。
+ *
+ * 关键约定：
+ *   1. 热区尺寸（--tap / --tap-sm）是**固定值**，不随字号档位缩小。
+ *      理由是规范对点击区域有独立下限要求 [S2]，字号变小不该让热区变小。
+ *   2. 字号通过 CSS 变量分三档，档位 class 挂在页面根节点上。
+ *   3. 不用阴影、渐变、纹理等复杂装饰 [S5]。只靠色块 + 1px 边框区分层级。
+ */
+
+page {
+  /* ---------- 颜色 ---------- */
+  /* 对比度依据 [S2]（≥4.5:1）；主色避蓝色 [S18]（老年人对蓝色敏感度下降） */
+  --c-text: #1A1A1A;    /* 正文，on 白 ≈ 17.4:1 */
+  --c-aux: #595959;     /* 辅助文字，on 白 ≈ 7.0:1（不用浅灰）[S17] */
+  --c-bg: #FFFFFF;
+  --c-card: #F7F7F7;    /* 卡片底，文字压上去仍 ≥15:1 */
+  --c-line: #D9D9D9;    /* 分隔线（非文本元素，不受 4.5:1 约束）[S3] */
+  --c-main: #C2581F;    /* 主色，白字 on 此色 ≈ 4.9:1 */
+  --c-main-press: #A6490F;
+  --c-danger: #C0392B;  /* 删除，白字 on 此色 ≈ 5.3:1 */
+  --c-danger-press: #A53024;
+  --c-undo: #FFF4E0;    /* 撤销条底 */
+  --c-undo-line: #E0A030;
+
+  /* ---------- 热区（固定，不随档位变）---------- */
+  /* [S2] 适老版主要组件 ≥60×60pt；其他页面主要组件 ≥44×44pt */
+  /* 换算：750rpx = 375pt → 1pt = 2rpx */
+  --tap: 120rpx;      /* 60pt · 主按钮、列表项 */
+  --tap-sm: 88rpx;    /* 44pt · 次要按钮、搜索框、设置项 */
+
+  /* ---------- 间距 ---------- */
+  --gap: 24rpx;       /* 元素间视觉距离 ≥2A [S1] */
+  --gap-lg: 32rpx;
+  --pad: 32rpx;       /* 页面左右留白 */
+  --radius: 16rpx;
+
+  /* ---------- 字号（默认 large，会被档位 class 覆盖）---------- */
+  --fs-body: 48rpx;     /* 24pt */
+  --fs-title: 44rpx;    /* 22pt */
+  --fs-section: 40rpx;  /* 20pt */
+  --fs-aux: 36rpx;      /* 18pt */
+  --fs-btn: 48rpx;      /* 24pt */
+}
+
+/* 三档字号。下限参照 [S2]（≥18pt）与 [S16]（≥16px），本项目的底线是辅助文字 ≥16pt。 */
+.scale-small {
+  --fs-body: 40rpx; --fs-title: 36rpx; --fs-section: 34rpx;
+  --fs-aux: 32rpx; --fs-btn: 40rpx;
+}
+.scale-large {
+  --fs-body: 48rpx; --fs-title: 44rpx; --fs-section: 40rpx;
+  --fs-aux: 36rpx; --fs-btn: 48rpx;
+}
+.scale-xlarge {
+  --fs-body: 56rpx; --fs-title: 52rpx; --fs-section: 48rpx;
+  --fs-aux: 44rpx; --fs-btn: 56rpx;
+}
+
+/* ---------- 通用布局 ---------- */
+.page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: var(--c-bg);
+  padding-bottom: 200rpx; /* 给底部固定按钮留位置 */
+}
+
+/* ---------- 文字 ---------- */
+.t-body {
+  font-size: var(--fs-body);
+  color: var(--c-text);
+  line-height: 1.5;            /* [S2] 底线 1.3，老人场景取更宽松 */
+  word-break: break-all;
+}
+.t-title {
+  font-size: var(--fs-title);
+  color: var(--c-text);
+  line-height: 1.4;
+  font-weight: 500;
+}
+.t-section {
+  font-size: var(--fs-section);
+  color: var(--c-text);
+  font-weight: 500;
+}
+.t-aux {
+  font-size: var(--fs-aux);
+  color: var(--c-aux);
+  line-height: 1.4;
+}
+.t-empty {
+  font-size: var(--fs-body);
+  color: var(--c-aux);
+  line-height: 1.6;
+  padding: 64rpx var(--pad);
+  text-align: center;
+}
+
+/* ---------- 按钮 ---------- */
+/* 用 view + hover-class 实现，避免 button 默认样式干扰；需要 open-type 时局部用 button。 */
+.btn {
+  box-sizing: border-box;
+  min-height: var(--tap);
+  padding: 0 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-btn);
+  border-radius: var(--radius);
+  line-height: 1.3;
+  text-align: center;
+}
+.btn-sm { min-height: var(--tap-sm); font-size: var(--fs-aux); }
+
+.btn-main { background: var(--c-main); color: #FFFFFF; }
+.btn-main.hover { background: var(--c-main-press); }
+
+.btn-danger { background: var(--c-danger); color: #FFFFFF; }
+.btn-danger.hover { background: var(--c-danger-press); }
+
+.btn-ghost {
+  background: var(--c-card);
+  color: var(--c-text);
+  border: 2rpx solid var(--c-line);
+}
+.btn-ghost.hover { background: #EFEFEF; }
+
+/* 底部固定主按钮 —— 放在拇指区 */
+.btn-fixed {
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 48rpx;
+  z-index: 10;
+}
+
+/* ---------- 卡片 / 列表项 ---------- */
+.card {
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  margin: 0 var(--pad) var(--gap);
+  box-sizing: border-box;
+}
+/* 列表项整块可点，高度不低于主组件热区下限 */
+.item {
+  min-height: var(--tap);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.item.hover { background: #EFEFEF; }
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.divider {
+  height: 2rpx;
+  background: var(--c-line);
+  margin: 0 var(--pad);
+}
+
+/* ---------- 撤销条 ---------- */
+/* 依据 [S9][S10]：可逆操作不弹确认框，改用可撤销提示 */
+.undo-bar {
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: 48rpx;
+  z-index: 20;
+  background: var(--c-undo);
+  border: 3rpx solid var(--c-undo-line);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.undo-bar .undo-text {
+  flex: 1;
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+  line-height: 1.4;
+}
+.undo-bar .undo-btn {
+  min-height: var(--tap-sm);
+  padding: 0 28rpx;
+  margin-left: var(--gap);
+  display: flex;
+  align-items: center;
+  background: var(--c-main);
+  color: #FFFFFF;
+  border-radius: 12rpx;
+  font-size: var(--fs-aux);
+}
+
+/* ---------- 提示条（首启调字号用）---------- */
+.tip-bar {
+  background: var(--c-undo);
+  border-bottom: 2rpx solid var(--c-undo-line);
+  padding: var(--gap) var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tip-bar .tip-text {
+  flex: 1;
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+  line-height: 1.4;
+}
+.tip-bar .tip-close {
+  min-width: var(--tap-sm);
+  min-height: var(--tap-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+}

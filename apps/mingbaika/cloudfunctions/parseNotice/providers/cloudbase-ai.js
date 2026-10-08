@@ -46,10 +46,12 @@ function createCloudbaseProvider(cfg) {
 
       const userContent = imageBase64 ? content : userPrompt;
       const model = cloud.extend.AI.createModel(cfg.modelFamily || 'cloudbase');
+      // 带图片时必须走多模态模型：纯文本模型（如 hy3）读不了图，会直接报错
+      const modelName = imageBase64 ? (cfg.modelVision || cfg.model) : cfg.model;
 
       // 两种参数形态都试一遍
       const payload = {
-        model: cfg.model,
+        model: modelName,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userContent },
@@ -71,7 +73,7 @@ function createCloudbaseProvider(cfg) {
               ok: true,
               text,
               usage: (res && res.usage) || null,
-              via: `cloudbase:${cfg.model}:${a.label}`,
+              via: `cloudbase:${modelName}:${a.label}${imageBase64 ? ':vision' : ''}`,
             };
           }
           errors.push(`${a.label}: 返回体里找不到文本`);

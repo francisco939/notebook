@@ -116,7 +116,7 @@ apps/mingbaika/
 
 | 文件 | 占位 | 替换成 |
 |---|---|---|
-| `project.config.json` | `"appid": "YOUR_APPID"` | 你的小程序 AppID |
+| `project.config.json` | `"appid": "wx77fb4239f60954f0"` | 你的小程序 AppID（已落地：2026-10-08） |
 | `miniprogram/app.js` | `var ENV_ID = 'YOUR_ENV_ID'` | 云开发环境 ID |
 
 > **也可以走自动化部署（推荐）。** 第 4、5 步（部署云函数、上传代码）已写进脚本。

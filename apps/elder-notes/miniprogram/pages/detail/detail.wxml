@@ -1,0 +1,23 @@
+<!--
+  看一页：一屏只做一件事——把这条内容用最大字号看清楚。
+  底部只有两个按钮：改 / 删。不给第三个选择，避免决策负担 [S17]
+-->
+<view class="page {{scaleClass}}">
+
+  <view class="detail-card">
+    <view class="t-body detail-content">{{content}}</view>
+  </view>
+
+  <view class="when-row" wx:if="{{timeText}}">
+    <text class="t-aux">时间：</text>
+    <text class="t-title">{{timeText}}</text>
+    <!-- 状态不只靠颜色 [S2][S4] -->
+    <text wx:if="{{overdue}}" class="tag-overdue">已过</text>
+  </view>
+
+  <view class="btn-row">
+    <view class="btn btn-ghost btn-half" bindtap="goEdit" hover-class="hover">✏️ 改一下</view>
+    <view class="btn btn-danger btn-half" bindtap="doDelete" hover-class="hover">🗑 删掉</view>
+  </view>
+
+</view>

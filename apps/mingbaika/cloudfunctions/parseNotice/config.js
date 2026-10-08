@@ -14,9 +14,17 @@ const CONFIG = {
   // http:      在云函数里直连模型厂商的 HTTP API（需自备 API Key）
   aiProvider: process.env.AI_PROVIDER || 'cloudbase',
 
-  // 模型标识。云开发托管时取 cloudbase 售卖的模型名；http 模式取厂商模型名。
-  // deepseek-v4-flash 是大赛发放额度的那个模型。
-  model: process.env.AI_MODEL || 'deepseek-v4-flash',
+  // 文字模型。2026-10-08 依据云开发控制台实际列表修正：
+  // 原配置 deepseek-v4-flash 不在 cloudbase 托管通道的可用列表里（那是
+  // HTTP 直连通道的模型），导致所有解析必然失败降级。
+  // hy3 标注"小程序成长计划"，走成长计划赠送的 Token 额度。
+  // 可用环境变量 AI_MODEL 覆盖，不必改代码。
+  model: process.env.AI_MODEL || 'hy3',
+
+  // 图片模型（多模态）。带图片的解析走它——hy3 是纯文本模型，读不了图。
+  // 控制台列表里标注"图文生"的才支持图片输入，选了 hy-vision-2.0-instruct。
+  // ⚠️ 该模型是否吃成长计划免费额度未经确认，可能按资源点计费——额度见控制台「费用管理」。
+  modelVision: process.env.AI_MODEL_VISION || 'hy-vision-2.0-instruct',
 
   // http 模式必填：OpenAI 兼容的 chat/completions 地址与密钥。
   // 也可以指向任何兼容 OpenAI 协议的厂商（智谱 / 月之暗面 / 通义 等）。

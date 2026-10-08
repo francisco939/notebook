@@ -1,0 +1,62 @@
+/* 首页局部样式。通用类（.btn/.card/.item/.t-*）都在 app.wxss。 */
+
+.search-wrap { padding: var(--gap) var(--pad) 0; }
+
+.search-box {
+  min-height: var(--tap-sm);       /* 44pt 热区下限 [S2] */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--gap);
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+}
+
+.search-icon {
+  font-size: var(--fs-aux);
+  margin-right: 12rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: var(--tap-sm);
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+}
+
+/* placeholder 用深灰而不是系统浅灰——浅灰在户外看不清 [S17] */
+.search-ph { color: var(--c-aux); }
+
+.search-clear {
+  min-height: var(--tap-sm);
+  min-width: var(--tap-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-aux);
+  color: var(--c-main);
+}
+
+.section-title {
+  padding: var(--gap-lg) var(--pad) var(--gap);
+}
+
+.note-line {
+  margin-bottom: 8rpx;
+}
+
+.time-line {
+  display: flex;
+  align-items: center;
+}
+
+/* "已过"标记：文字 + 边框，不只用颜色 [S2][S4] */
+.tag-overdue {
+  margin-left: 16rpx;
+  padding: 2rpx 12rpx;
+  border: 2rpx solid var(--c-danger);
+  border-radius: 8rpx;
+  color: var(--c-danger);
+  font-size: var(--fs-aux);
+}

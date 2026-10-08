@@ -1,8 +1,7 @@
 {
   "miniprogramRoot": "miniprogram/",
-  "cloudfunctionRoot": "cloudfunctions/",
-  "projectname": "mingbaika",
-  "description": "明白卡 —— 把家长群通知降维成老人能执行的大字行动卡",
+  "projectname": "elder-notes",
+  "description": "记得 —— 给老人用的极简记事本：记下来，别忘了，找得到",
   "appid": "wx77fb4239f60954f0",
   "compileType": "miniprogram",
   "libVersion": "latest",

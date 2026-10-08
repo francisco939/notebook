@@ -2,7 +2,7 @@
 
 // TODO: 把 YOUR_ENV_ID 替换成你自己的微信云开发环境 ID（在云开发控制台查看）。
 //       不填会导致 wx.cloud.callFunction 调用失败。
-var ENV_ID = 'YOUR_ENV_ID';
+var ENV_ID = 'cloudbase-d5g5ujb8104db7396';
 
 App({
   globalData: {

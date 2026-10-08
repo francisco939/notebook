@@ -1,0 +1,37 @@
+/* 设置页 */
+
+.field-label {
+  padding: var(--gap-lg) var(--pad) var(--gap);
+}
+
+/* 选中态：不只靠颜色，还加了"✓ 正在用"文字 [S2][S4] */
+.scale-opt.on {
+  border: 4rpx solid var(--c-main);
+  background: #FFF8F3;
+}
+
+.scale-opt {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+/* 三档预览：让老人直接看到效果，不用猜"大"是多大 */
+.preview-small { font-size: 40rpx; }
+.preview-large { font-size: 48rpx; }
+.preview-xlarge { font-size: 56rpx; }
+
+.preview-small-note { font-size: 32rpx; margin-left: 20rpx; }
+.preview-large-note { font-size: 36rpx; margin-left: 20rpx; }
+.preview-xlarge-note { font-size: 44rpx; margin-left: 20rpx; }
+
+.check {
+  margin-left: auto;
+  color: var(--c-main);
+  font-size: var(--fs-aux);
+}
+
+.about-note {
+  margin-top: 12rpx;
+  display: block;
+}

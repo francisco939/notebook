@@ -1,0 +1,75 @@
+/* 记一页 / 改一页 */
+
+.field-label {
+  display: flex;
+  align-items: baseline;
+  padding: var(--gap-lg) var(--pad) var(--gap);
+}
+.field-tip { margin-left: 12rpx; }
+
+.input-card {
+  margin: 0 var(--pad);
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  box-sizing: border-box;
+}
+
+/* 输入框固定高度，不随内容伸缩——老人写多写少，按钮位置不变 */
+.content-input {
+  width: 100%;
+  height: 420rpx;
+  font-size: var(--fs-body);
+  color: var(--c-text);
+  line-height: 1.5;   /* [S2] 行距底线 1.3 */
+}
+
+.input-card-sm {
+  margin: 0 var(--pad);
+  min-height: var(--tap-sm);   /* 44pt 热区下限 [S2] */
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  padding: 0 var(--gap);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.when-input {
+  flex: 1;
+  height: var(--tap-sm);
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+.when-ph { color: var(--c-aux); }
+
+.voice-tip {
+  padding: var(--gap) var(--pad) 0;
+}
+
+/* 三个快捷词：替代老人不会用的日期滚轮 */
+.quick-row {
+  display: flex;
+  padding: var(--gap) var(--pad) 0;
+}
+.quick-btn {
+  min-height: var(--tap-sm);      /* 44pt */
+  min-width: 160rpx;
+  margin-right: var(--gap);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  box-sizing: border-box;
+}
+.quick-btn.hover { background: #EFEFEF; }
+
+.parsed-hint {
+  padding: var(--gap) var(--pad) 0;
+}

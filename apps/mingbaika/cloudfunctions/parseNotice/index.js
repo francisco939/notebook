@@ -29,6 +29,12 @@ exports.main = async (event) => {
   const event_ = event || {};
   const { fileID, rawText, requestId } = event_;
 
+  // ── 0. 自检模式：不走解析链路，只诊断 AI 是否可达、模型名是否正确 ──────
+  // 必须放在参数校验之前，否则会被"请提供图片或文字"拦掉。
+  // 用途：不用真机、不用小程序前端，直接在云开发控制台调用本函数，
+  //       就能定位"所有解析都降级"是不是模型配置导致的。
+  if (event_.selfTest) return runSelfTest();
+
   let openid = null;
   try {
     openid = (cloud.getWXContext() || {}).OPENID || null;
@@ -163,6 +169,92 @@ function buildDocId(openid, requestId) {
   const safe = requestId.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 40);
   if (!safe) return null;
   return `${(openid || 'anon').slice(0, 28)}_${safe}`;
+}
+
+/**
+ * 自检：诊断 AI 通道是否可用、模型名是否正确。
+ *
+ * 为什么需要它：
+ *   "解析全部降级成『这条我没看懂』" 的根因可能在模型配置（模型名不在
+ *   该通道的可用列表里），而这种问题在小程序前端只能看到一个降级结果，
+ *   看不出原因。本函数把每一步都摊开，让根因可见。
+ *
+ * 调用方式（云开发控制台 → 云函数 → parseNotice → 测试）：
+ *   { "selfTest": true }
+ *
+ * 不写数据库、不消耗额度以外的资源，只读诊断。
+ * 注意：会真实调用一次模型（约十几个 token），用于确认模型名有效。
+ */
+async function runSelfTest() {
+  const out = {
+    selfTest: true,
+    at: new Date().toISOString(),
+    config: {
+      aiProvider: cfg.aiProvider,
+      model: cfg.model,
+      modelVision: cfg.modelVision || '(未设置，图片将退回用文字模型——会失败)',
+      modelFamily: cfg.modelFamily || '(未设置 → 默认 cloudbase)',
+      httpBaseUrl: cfg.aiProvider === 'http' ? cfg.http.baseUrl : '(不适用)',
+      httpApiKeySet: cfg.aiProvider === 'http' ? !!cfg.http.apiKey : '(不适用)',
+      debug: cfg.debug,
+    },
+    checks: {},
+    errors: [],
+  };
+
+  // 1) 云环境可达性
+  try {
+    const ctx = cloud.getWXContext() || {};
+    out.checks.wxContext = ctx.OPENID ? 'ok（已拿到 openid）' : 'ok（无 openid，控制台调用时正常）';
+  } catch (e) {
+    out.checks.wxContext = 'FAIL: ' + (e.message || String(e));
+  }
+
+  // 2) provider 能否构造
+  let provider;
+  try {
+    provider = createProvider(cfg);
+    out.checks.provider = 'ok（' + provider.name + '）';
+  } catch (e) {
+    out.checks.provider = 'FAIL: ' + (e.message || String(e));
+    return out;
+  }
+
+  // 3) 真实调用一次最小请求 —— 这一步能直接验证模型名是否有效
+  try {
+    const res = await provider.parse({
+      systemPrompt: '只回复两个字：正常。不要加任何其他内容。',
+      userPrompt: '正常',
+      imageBase64: null,
+      mimeType: null,
+      timeoutMs: 20000,
+    });
+    if (res && res.ok) {
+      out.checks.modelCall = 'ok（' + (res.via || provider.name) + '）';
+      out.sampleReply = String(res.text || '').slice(0, 120);
+      if (res.usage) out.usage = res.usage;
+    } else {
+      out.checks.modelCall = 'FAIL';
+      out.errors.push('模型调用失败：' + ((res && res.error) || '(无错误信息)'));
+    }
+  } catch (e) {
+    out.checks.modelCall = 'FAIL（抛异常）';
+    out.errors.push('模型调用异常：' + (e && e.message ? e.message : String(e)));
+  }
+
+  // 4) 结论提示
+  if (out.checks.modelCall && out.checks.modelCall.indexOf('ok') === 0) {
+    out.verdict = 'AI 通道可用，模型名有效且开关已打开。若解析仍失败，问题不在模型配置。';
+  } else {
+    out.verdict =
+      'AI 通道不可用。按可能性排查：' +
+      '① 控制台的模型「状态」开关没打开（云开发控制台 → AI → 生文模型 → 把 ' + cfg.model +
+      ' 的开关打开）；' +
+      '② 模型名「' + cfg.model + '」不在本通道可用列表（去控制台 → AI 对照实际名字）；' +
+      '③ 以上都对则看 errors 里的具体报错。';
+  }
+
+  return out;
 }
 
 /** 按扩展名 + 魔数判断图片类型。云开发返回的 fileID 不一定带后缀。 */
