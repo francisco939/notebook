@@ -31,8 +31,10 @@
    - 占据赛道：**信息无障碍 / 老年数字包容**；为 2026 微信小程序开发大赛专门设计
    - 明确不做：多级文件夹、标签体系、富文本、账号体系、社交社区、深色模式
    - 详见 `apps/elder-notes/docs/需求与设计说明.md`（含 S1–S23 参考来源清单）
-   - **前身「明白卡」**（群通知解构工具）已于 2026-10-08 停用方向，代码保留在
-     `apps/mingbaika/`，其中 `core/time-parser.js` 作为可复用资产搬到新项目
+   - **部署工具链**（`node_modules` + `package.json` + `package-lock.json`）放在
+     `apps/elder-notes/` 下，含 `miniprogram-ci`；`npm run check` / `npm run test`
+   - **前身「明白卡」**（群通知解构工具）已于 2026-10-08 停用方向，源码整体删除；
+     可复用资产在 `_archive/`，其中 `core/time-parser.js` 的修复版已搬到本项目
 
 ## 本机环境约定
 
@@ -55,16 +57,19 @@
 - 语音：微信「同声传译」插件**不对个人主体开放** → 不自建 ASR，引导用输入法自带话筒
 - 提醒：小程序**做不到闹钟式主动响**（一次性订阅=1次授权1条）→ 主方案是"打开即见"
 
-## 明白卡（mingbaika）· 架构定调（2026-10-08，方向已停用，仅存档）
+## 明白卡（mingbaika）· 已删除（2026-10-08 晚）
 
-- **核心功能已去 AI 依赖**，改为**小程序端纯本地规则引擎**（无可用 AI 额度）。
-  方案见 `apps/mingbaika/docs/技术方案-纯本地版.md`。
-- 铁律：**ActionCard Schema v1.0 是唯一契约，不得改动**。
-  本地抽取器必须产出**与 AI 输出同构**的 JSON，以便将来换回 AI 时下游零改动。
-- 解析引擎放在**小程序端**（不是云函数）——为弱网可用，也为将来"端上规则先行 +
-  失败上云调 AI"的分层留出空间。
-- 图片识别不做（本地无可用 OCR），引导用户用微信自带「长按图片→提取文字」。
-- 已知可复用资产：`core/` 的 time-parser / risk-rules / schema **完全不依赖 AI**。
+- `apps/mingbaika/` **整体删除**（54 文件）。原因：方向转向「记得」，且云开发托管 AI
+  模型开关全关、代码内模型名 `deepseek-v4-flash` 在通道里根本不存在 → 主流程无法工作。
+- 可复用资产保留在 **`_archive/`**（失效文档 4 份 / gen-avatar.js / deploy.js / avatar.png），
+  详见 `_archive/README.md`。**删除前已全量提交，全部可从 git 历史恢复**。
+- `_archive/明白卡-可复用工具/deploy.js` 是 miniprogram-ci 封装，但**硬编码了
+  `parseNotice` 云函数和 `cloudfunctions/` 路径**，给「记得」用必须先改造。
+- `time-parser.js` 的**修复版**（支持「下午三点」中文数字钟点、只有钟点无日期时兜底）
+  在 `apps/elder-notes/miniprogram/utils/time-parser.js`。**旧项目那份是未修复版**，
+  归档区没留，复用请以新项目副本为准。
+- 旧曾定的铁律（ActionCard Schema v1.0 唯一契约、端上规则引擎优先）随项目删除不再适用，
+  仅作历史记录保留在此。
 
 ## 协作约定
 
