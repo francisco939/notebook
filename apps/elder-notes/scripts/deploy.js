@@ -79,6 +79,25 @@ function readAppId() {
 }
 
 /**
+ * 从 startDir 开始逐级向上查找某个相对路径对应的实际位置，
+ * 模仿 Node require() 对 node_modules 的解析规则。
+ *
+ * @param {string} startDir 起始目录
+ * @param {string} relPath  相对路径片段，如 node_modules/miniprogram-ci
+ * @returns {string|null} 命中的绝对路径；一路找到盘符根仍没有则返回 null
+ */
+function findUpwards(startDir, relPath) {
+  let dir = path.resolve(startDir);
+  for (;;) {
+    const candidate = path.join(dir, relPath);
+    if (fs.existsSync(candidate)) return candidate;
+    const parent = path.dirname(dir);
+    if (parent === dir) return null; // 已到盘符根
+    dir = parent;
+  }
+}
+
+/**
  * 找代码上传密钥。优先级：
  *   1. 环境变量 MP_PRIVATE_KEY_PATH
  *   2. deploy.config.json 的 privateKeyPath
@@ -174,11 +193,17 @@ function preflight(needKey) {
   }
 
   // 部署依赖
-  if (fs.existsSync(path.join(ROOT, 'node_modules', 'miniprogram-ci'))) {
+  // 注意：node_modules 特意放在工作区根目录（不在本目录），因为 276M / 2.2 万个文件
+  // 摆在小程序项目目录里会显著拖慢微信开发者工具的导入与索引。
+  // Node 的 require 会自动向上逐级查找，所以这里的检测也必须跟着逐级找，
+  // 否则会误报“没安装”。见 RESOLVE_DIRS。
+  const miniprogramCiDir = findUpwards(ROOT, path.join('node_modules', 'miniprogram-ci'));
+  if (miniprogramCiDir) {
     ok('部署依赖 miniprogram-ci 已安装');
+    info(dim(`位置：${miniprogramCiDir}`));
   } else {
     bad('还没安装 miniprogram-ci（preview / upload 都要用它）');
-    info('在本目录执行：npm install');
+    info(`在本目录或工作区根目录执行：npm install`);
     problems.push('deps');
   }
 
