@@ -1,0 +1,54 @@
+# ============================================================
+# 换行与二进制处理
+# 背景：本机 core.autocrlf=true，全新检出时 Git 会把文本转成 CRLF。
+# 这对 Windows 上的 .bat 是对的，但会让 .sh 在 Git Bash 下因 \r 报错。
+# 因此这里按扩展名显式钉死，不依赖全局配置。
+# ============================================================
+
+# 默认：由 Git 自动判定文本，索引内统一存 LF
+* text=auto
+
+# ---- 必须是 LF 的文件 ----
+# Shell 脚本含 \r 会在 Git Bash / WSL / CI 里报 "bad interpreter"
+*.sh    text eol=lf
+*.bash  text eol=lf
+
+# ---- 必须是 CRLF 的文件 ----
+# Windows 批处理含 LF 会导致行拼接错误
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# ---- 明确文本类型（便于 diff 与合并） ----
+*.js      text
+*.mjs     text
+*.cjs     text
+*.json    text
+*.wxml    text
+*.wxss    text
+*.wxs     text
+*.md      text
+*.txt     text
+*.yml     text
+*.yaml    text
+*.xml     text
+*.html    text
+*.css     text
+
+# ---- 二进制：不做换行转换、不参与文本 diff ----
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.webp    binary
+*.ico     binary
+*.bmp     binary
+*.glb     binary
+*.gltf    binary
+*.ttf     binary
+*.otf     binary
+*.woff    binary
+*.woff2   binary
+*.zip     binary
+*.mp4     binary
+*.mov     binary
+*.pdf     binary
