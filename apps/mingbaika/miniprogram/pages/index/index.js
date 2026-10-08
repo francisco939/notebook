@@ -21,18 +21,20 @@ Page({
   },
 
   /**
-   * 统一入口：尝试用转发参数直接解析。参数形式：
-   *   { rawText: string, fileID: string }
-   * 两者都没有则什么都不做（留在首页）。
+   * 统一入口：尝试用转发参数直接解析。参数有三种形态，来源不同：
+   *   聊天素材（scene 1173）→ { materialPath, materialType, materialName }
+   *   普通 query           → { rawText, fileID }
+   * 全都没有则什么都不做（留在首页）。
    */
   _tryForward: function (src) {
     if (!src) return;
     var rawText = (src.rawText || '').trim();
     var fileID = (src.fileID || '').trim();
-    if (!rawText && !fileID) return;
+    var materialPath = (src.materialPath || '').trim();
+    if (!rawText && !fileID && !materialPath) return;
     // 消费掉，避免重复触发
     app.globalData.pendingForward = null;
-    this._runParse({ rawText: rawText, fileID: fileID });
+    this._runParse({ rawText: rawText, fileID: fileID, materialPath: materialPath });
   },
 
   // 入口 1：从聊天记录选择图片（主入口）
@@ -69,8 +71,8 @@ Page({
   },
 
   /**
-   * 统一解析流程：上传（如有临时文件）→ 调云函数 → 存历史 → 跳结果页。
-   * @param {{tempFilePath?:string, fileID?:string, rawText?:string}} param
+   * 统一解析流程：上传（如有图片）→ 调云函数 → 存历史 → 跳结果页。
+   * @param {{tempFilePath?:string, materialPath?:string, fileID?:string, rawText?:string}} param
    */
   _runParse: function (param) {
     var self = this;
@@ -78,6 +80,7 @@ Page({
 
     var fileID = param.fileID || '';
     var rawText = param.rawText || '';
+    var materialPath = param.materialPath || '';
     var requestId = api.genRequestId();
 
     self.setData({ loading: true, loadingText: '正在识别通知…' });
@@ -103,6 +106,14 @@ Page({
         .then(function (fid) { doCall(fid); })
         .catch(function (err) {
           wx.showToast({ title: (err && err.message) || '上传失败', icon: 'none' });
+          self.setData({ loading: false });
+        });
+    } else if (materialPath) {
+      // 聊天素材入口（scene 1173）进来：path 可能是 URL，也可能是本地临时路径
+      api.uploadFromMaterialPath(materialPath, requestId)
+        .then(function (fid) { doCall(fid); })
+        .catch(function (err) {
+          wx.showToast({ title: (err && err.message) || '素材处理失败', icon: 'none' });
           self.setData({ loading: false });
         });
     } else if (fileID || rawText) {

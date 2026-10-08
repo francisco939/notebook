@@ -210,6 +210,69 @@ if (placeholders.length) {
 }
 
 // ---------------------------------------------------------------------------
+console.log('== 7. supportedMaterials 声明（聊天素材入口）==');
+// ---------------------------------------------------------------------------
+// 依据：微信开放文档《聊天素材支持小程序打开》
+// https://developers.weixin.qq.com/miniprogram/dev/framework/material/support_material
+// 约束（写错会被提审驳回，所以在这里拦）：
+//   - materialType / name / desc / path 四项必填
+//   - name 必须含 ${nickname}，且除它之外不得超过 6 字
+//   - desc 不得超过 22 字
+//   - 同一种 materialType 只能声明一种处理方式
+//   - path 必须指向 app.json 里已注册的页面
+if (appJson && appJson.supportedMaterials !== undefined) {
+  const sm = appJson.supportedMaterials;
+  if (!Array.isArray(sm)) {
+    fail('app.json 的 supportedMaterials 不是数组');
+  } else {
+    const NAME_TOKEN = '${nickname}';
+    const seenTypes = new Set();
+    for (let i = 0; i < sm.length; i++) {
+      const item = sm[i] || {};
+      const tag = 'supportedMaterials[' + i + ']';
+
+      for (const k of ['materialType', 'name', 'desc', 'path']) {
+        if (!item[k]) fail(tag + ' 缺少必填字段 ' + k);
+        else ok();
+      }
+      if (item.name !== undefined) {
+        if (String(item.name).indexOf(NAME_TOKEN) < 0) {
+          fail(tag + '.name 必须包含 ${nickname}，编译时会替换成小程序名称');
+        } else {
+          ok();
+          const rest = String(item.name).split(NAME_TOKEN).join('');
+          if (rest.length > 6) {
+            fail(tag + '.name 除 ${nickname} 外不得超过 6 字，当前 ' + rest.length + ' 字："' + rest + '"');
+          } else ok();
+        }
+      }
+      if (item.desc !== undefined) {
+        if (String(item.desc).length > 22) {
+          fail(tag + '.desc 不得超过 22 字，当前 ' + String(item.desc).length + ' 字');
+        } else ok();
+      }
+      if (item.materialType !== undefined) {
+        if (seenTypes.has(item.materialType)) {
+          fail(tag + '.materialType 重复声明：' + item.materialType + '（一种类型只能声明一种处理方式）');
+        } else {
+          seenTypes.add(item.materialType);
+          ok();
+        }
+      }
+      if (item.path !== undefined) {
+        const p = String(item.path).replace(/\/$/, '');
+        if ((appJson.pages || []).indexOf(p) < 0) {
+          fail(tag + '.path="' + item.path + '" 不在 app.json 的 pages 列表中');
+        } else ok();
+      }
+    }
+    console.log('   检查 ' + sm.length + ' 条素材声明');
+  }
+} else if (appJson) {
+  warn('app.json 未声明 supportedMaterials —— 用户长按聊天里的图片/文件时，不会出现「用明白卡看懂」入口');
+}
+
+// ---------------------------------------------------------------------------
 console.log('\n' + '-'.repeat(56));
 console.log(`静态检查项 ${checks} 个，错误 ${errors.length} 个，提醒 ${warnings.length} 个`);
 if (errors.length) {

@@ -23,6 +23,14 @@
   "networkTimeout": {
     "request": 600000
   },
+  "supportedMaterials": [
+    {
+      "materialType": "image/*",
+      "name": "用${nickname}看懂",
+      "desc": "把群通知变成能听懂的行动卡",
+      "path": "pages/index/index"
+    }
+  ],
   "sitemapLocation": "sitemap.json",
   "style": "v2"
 }

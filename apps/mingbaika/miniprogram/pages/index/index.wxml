@@ -18,9 +18,9 @@
 
   <view class="tip panel">
     <view class="tip-title">怎么用</view>
-    <view class="tip-line">1. 在群里长按通知，选「转发」→「明白卡」</view>
-    <view class="tip-line">2. 或点上面的按钮，把截图、照片发给我</view>
-    <view class="tip-line">3. 我会告诉你：要做什么、什么时候前、交多少钱</view>
+    <view class="tip-line">1. 群里发的是图片 → 长按它，选「用明白卡看懂」</view>
+    <view class="tip-line">2. 群里发的是文字 → 先截个图，再点上面「从聊天选图片」</view>
+    <view class="tip-line">3. 纸质的通知单 → 点「拍照 / 相册」拍下来</view>
   </view>
 
   <view class="history-link tap" bindtap="onOpenHistory">
