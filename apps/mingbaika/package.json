@@ -10,7 +10,8 @@
     "deploy:upload": "node scripts/deploy.js upload",
     "deploy:fn": "node scripts/deploy.js fn",
     "deploy:all": "node scripts/deploy.js all",
-    "test": "node cloudfunctions/parseNotice/tests/core.test.js && node cloudfunctions/parseNotice/tests/pipeline-model.test.js"
+    "test": "node cloudfunctions/parseNotice/tests/core.test.js && node cloudfunctions/parseNotice/tests/pipeline-model.test.js && node cloudfunctions/parseNotice/tests/time-parser-corpus.test.js",
+    "test:corpus": "node cloudfunctions/parseNotice/tests/time-parser-corpus.test.js"
   },
   "devDependencies": {
     "miniprogram-ci": "^2.1.31"
