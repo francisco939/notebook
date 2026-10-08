@@ -1,0 +1,13 @@
+{
+  "name": "parseNotice",
+  "version": "1.0.0",
+  "description": "明白卡 · 解构引擎云函数：把群通知解构成老人可执行的行动卡",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "test": "node tests/core.test.js"
+  },
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

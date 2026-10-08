@@ -1,0 +1,37 @@
+<!-- 入口页：三个通知入口 + 转发处理。一屏看完，零跳转干扰。 -->
+<view class="page">
+
+  <view class="hero">
+    <view class="hero-title">看不懂家长群的通知？</view>
+    <view class="hero-sub">把通知转发给我，给你一张大字、能听的行动卡</view>
+  </view>
+
+  <view class="entries">
+    <!-- 主入口：从聊天选图片 -->
+    <button class="btn btn-primary entry" bindtap="onChooseFromChat">
+      从聊天选图片
+    </button>
+    <button class="btn btn-ghost entry" bindtap="onChooseMedia">
+      拍照 / 相册
+    </button>
+  </view>
+
+  <view class="tip panel">
+    <view class="tip-title">怎么用</view>
+    <view class="tip-line">1. 在群里长按通知，选「转发」→「明白卡」</view>
+    <view class="tip-line">2. 或点上面的按钮，把截图、照片发给我</view>
+    <view class="tip-line">3. 我会告诉你：要做什么、什么时候前、交多少钱</view>
+  </view>
+
+  <view class="history-link tap" bindtap="onOpenHistory">
+    <text class="history-text">查看历史记录 ›</text>
+  </view>
+
+  <!-- 加载遮罩：识别中不弹窗、不跳转，只给一句进度 -->
+  <view class="loading-mask" wx:if="{{loading}}">
+    <view class="loading-box">
+      <view class="loading-text">{{loadingText}}</view>
+    </view>
+  </view>
+
+</view>

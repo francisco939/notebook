@@ -1,0 +1,60 @@
+/* 全局样式
+ * 说明：WXSS 不支持 page 选择器的 CSS 变量 var(--xxx) 在旧版本稳定生效，
+ * 这里统一用「具体色值 + 注释」标注用途，避免变量兼容问题。
+ *
+ * 配色（高对比度，针对老花眼）：
+ *   --c-bg:        #F5F5F0  页面背景（米白，不刺眼）
+ *   --c-card:      #FFFFFF  卡片背景
+ *   --c-ink:       #1A1A1A  主文字（近黑）
+ *   --c-sub:       #595959  次要文字（深灰）
+ *   --c-brand:     #1B5E20  主题绿（按钮/强调，深绿更清晰）
+ *   --c-brand-ink: #FFFFFF  按钮文字
+ *   --c-warn:      #B26A00  低置信度提示（琥珀）
+ *   --c-danger:    #B71C1C  危险拦截（深红）
+ *   --c-line:      #D9D9D2  分隔线
+ */
+
+page {
+  background: #F5F5F0;
+  color: #1A1A1A;
+  /* 正文最小字号保障：34rpx（约 17px），老人可读 */
+  font-size: 34rpx;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, button { box-sizing: border-box; }
+
+/* 通用：大按钮，高度 ≥ 96rpx，整块可点区域 ≥ 88rpx */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 112rpx;
+  min-height: 96rpx;
+  padding: 0 32rpx;
+  border-radius: 20rpx;
+  font-size: 40rpx;
+  font-weight: 600;
+  border: none;
+  line-height: 1.2;
+}
+.btn::after { border: none; }  /* 去掉微信默认按钮边框 */
+
+.btn-primary { background: #1B5E20; color: #FFFFFF; }
+.btn-ghost  { background: #FFFFFF; color: #1B5E20; border: 3rpx solid #1B5E20; }
+.btn-danger { background: #B71C1C; color: #FFFFFF; }
+
+/* 通用卡片容器 */
+.panel {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 通用分隔线 */
+.hr { height: 2rpx; background: #D9D9D2; margin: 24rpx 0; }
+
+/* 让可点区域至少 88rpx 高 */
+.tap { min-height: 88rpx; display: flex; align-items: center; }

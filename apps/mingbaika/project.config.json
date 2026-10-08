@@ -1,0 +1,18 @@
+{
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "projectname": "mingbaika",
+  "description": "明白卡 —— 把家长群通知降维成老人能执行的大字行动卡",
+  "appid": "YOUR_APPID",
+  "compileType": "miniprogram",
+  "libVersion": "latest",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": false,
+    "ignoreDevUnusedFiles": false
+  },
+  "condition": {}
+}

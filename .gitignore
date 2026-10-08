@@ -1,0 +1,53 @@
+# ---- 通用 ----
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.env
+.env.local
+.env.*.local
+
+# ---- 编辑器 / IDE ----
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# ---- Node / 前端 ----
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.cache/
+coverage/
+*.local
+
+# ---- 微信小程序 ----
+miniprogram_npm/
+project.private.config.json
+
+# ---- Flutter / Dart ----
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+*.g.dart
+
+# ---- Java / Maven ----
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+*.class
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- Gradle ----
+.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- WorkBuddy 项目数据（保留 memory，其余忽略） ----
+.workbuddy/*
+!.workbuddy/memory/
+.workbuddy/memory/*
+!.workbuddy/memory/*.md

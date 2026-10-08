@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "行动卡",
+  "usingComponents": {
+    "action-card": "/components/action-card/action-card",
+    "risk-banner": "/components/risk-banner/risk-banner"
+  }
+}

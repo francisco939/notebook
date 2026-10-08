@@ -1,0 +1,151 @@
+/* 行动卡组件样式（高对比度、大字号、大触控区） */
+
+.card {
+  background: #FFFFFF;
+  border-radius: 24rpx;
+  padding: 36rpx 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 卡片标题：≥52rpx */
+.title {
+  font-size: 52rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  line-height: 1.35;
+}
+
+/* 一句话说明：正文基准 34rpx */
+.summary {
+  font-size: 34rpx;
+  color: #595959;
+  margin-top: 16rpx;
+  line-height: 1.6;
+}
+
+.publisher {
+  font-size: 30rpx;
+  color: #8A8A82;
+  margin-top: 12rpx;
+}
+
+/* 行动项列表 */
+.items { margin-top: 28rpx; }
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  padding: 24rpx 0;
+  border-top: 2rpx solid #D9D9D2;
+}
+.item:first-child { border-top: none; }
+
+/* 序号圆圈，≥88rpx 触控 */
+.item-index {
+  flex: 0 0 auto;
+  width: 64rpx;
+  height: 64rpx;
+  margin-right: 20rpx;
+  margin-top: 6rpx;
+  border-radius: 50%;
+  background: #1B5E20;
+  color: #FFFFFF;
+  font-size: 40rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-body { flex: 1; min-width: 0; }
+
+/* 行动项主文案：≥44rpx */
+.item-what {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+  line-height: 1.4;
+}
+
+.item-meta { margin-top: 14rpx; }
+
+.meta-line {
+  display: flex;
+  align-items: center;
+  margin-top: 10rpx;
+}
+
+.meta-tag {
+  flex: 0 0 auto;
+  font-size: 30rpx;
+  color: #FFFFFF;
+  background: #595959;
+  border-radius: 8rpx;
+  padding: 4rpx 14rpx;
+  margin-right: 16rpx;
+}
+
+.meta-val {
+  font-size: 36rpx;
+  color: #1A1A1A;
+}
+.meta-val.amount { color: #B26A00; font-weight: 700; }
+
+/* 低置信度核对条：琥珀底，提示老人看原文 */
+.raw-check {
+  margin-top: 10rpx;
+  background: #FFF7E6;
+  border-left: 8rpx solid #B26A00;
+  border-radius: 8rpx;
+  padding: 12rpx 16rpx;
+  font-size: 32rpx;
+  color: #8A5300;
+  line-height: 1.5;
+}
+
+.meta-note {
+  margin-top: 10rpx;
+  font-size: 32rpx;
+  color: #595959;
+}
+
+/* 风险提示（info / warn） */
+.risks { margin-top: 28rpx; }
+
+.risk {
+  border-radius: 12rpx;
+  padding: 18rpx 20rpx;
+  margin-top: 14rpx;
+}
+.risk-info {
+  background: #EAF3FB;
+  border-left: 8rpx solid #1565C0;
+}
+.risk-warn {
+  background: #FFF7E6;
+  border-left: 8rpx solid #B26A00;
+}
+.risk-title { font-size: 34rpx; color: #1A1A1A; font-weight: 600; }
+.risk-evidence { font-size: 30rpx; color: #595959; margin-top: 6rpx; }
+
+/* 降级卡的原文展示 */
+.raw-box {
+  margin-top: 24rpx;
+  background: #F5F5F0;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+.raw-label {
+  display: inline-block;
+  font-size: 30rpx;
+  color: #8A8A82;
+  margin-bottom: 12rpx;
+}
+.raw-text {
+  display: block;
+  font-size: 38rpx;
+  color: #1A1A1A;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
