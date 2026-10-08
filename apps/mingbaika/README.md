@@ -32,7 +32,8 @@ apps/mingbaika/
 ├── package.json                     # 部署工具链依赖（miniprogram-ci）；node_modules 已忽略
 ├── scripts/check.js                 # 静态校验脚本（下面第五节讲怎么用）
 ├── scripts/deploy.js                # ★ 部署脚本（云函数 + 上传代码，基于 miniprogram-ci）
-├── docs/部署指南.md                  # ★ 部署分工、密钥与白名单、常见报错对照
+├── docs/部署指南-小白版.md            # ★ 第一次做小程序就从这份开始：8 步点按说明
+├── docs/部署指南.md                  # 部署分工、密钥与白名单、ICP 备案流程、常见报错对照
 ├── docs/AI接入选型.md                # 云开发托管 vs HTTP 直连的决策依据
 ├── docs/入口实测清单.md              # ★ 三个通知入口的真机实测步骤与判定规则
 ├── miniprogram/                     # 小程序端
