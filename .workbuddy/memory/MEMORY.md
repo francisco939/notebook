@@ -7,6 +7,9 @@
 - 项目根目录：`C:\Users\nihao\Desktop\FJTravel`
   （原会话工作区为 `C:\Users\nihao\WorkBuddy\2026-10-08-13-41-34`，2026-10-08 迁移过来）
 - 迁移原因：用户创建任务时忘记指定目录，属路径配置疏漏，非目录本身问题。
+- **Git 远端**：`https://github.com/francisco939/notebook.git`（2026-10-09 由
+  `francisco939/mingbaika` 更换而来；新仓库名对应项目「记得」）。分支 `main`，HTTPS 传输
+  （本机无 SSH 密钥）。推送常受本机代理间歇 502 影响，**失败先重试**。
 
 ## 项目定位
 
