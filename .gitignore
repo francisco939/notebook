@@ -26,6 +26,13 @@ coverage/
 miniprogram_npm/
 project.private.config.json
 
+# ---- 部署密钥与本地配置（绝不可入库） ----
+# 小程序「代码上传密钥」拥有上传/预览权限，泄露等于代码可被他人发布。
+*.key
+private.*.key
+deploy.config.json
+preview-qrcode.jpg
+
 # ---- Flutter / Dart ----
 .dart_tool/
 .packages

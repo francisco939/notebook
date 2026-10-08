@@ -16,6 +16,7 @@
 | 纯函数内核（校验/时间解析/风险规则/降级） | ✅ 完成 | 46 项离线测试全通过 |
 | 云函数解构引擎（含两条 AI 路线） | ✅ 完成 | 静态校验通过；需真机联调 |
 | 小程序端（3 页面 + 2 组件） | ✅ 完成 | 静态校验 77 项通过 |
+| 部署工具链（`scripts/deploy.js`） | ✅ 完成 | 前置检查双向验证通过（缺项报错 / 补齐放行） |
 | **真实运行** | ⏳ 待人工 | 需要 AppID + 云环境（见第四节） |
 | **三个通知入口能否跑通** | ⏳ **待真机实测** | 见 `docs/入口实测清单.md` —— **这是本届的单点风险** |
 
@@ -28,7 +29,10 @@
 ```
 apps/mingbaika/
 ├── project.config.json              # 开发者工具项目配置（miniprogramRoot / cloudfunctionRoot）
+├── package.json                     # 部署工具链依赖（miniprogram-ci）；node_modules 已忽略
 ├── scripts/check.js                 # 静态校验脚本（下面第五节讲怎么用）
+├── scripts/deploy.js                # ★ 部署脚本（云函数 + 上传代码，基于 miniprogram-ci）
+├── docs/部署指南.md                  # ★ 部署分工、密钥与白名单、常见报错对照
 ├── docs/AI接入选型.md                # 云开发托管 vs HTTP 直连的决策依据
 ├── docs/入口实测清单.md              # ★ 三个通知入口的真机实测步骤与判定规则
 ├── miniprogram/                     # 小程序端
@@ -114,6 +118,21 @@ apps/mingbaika/
 | `project.config.json` | `"appid": "YOUR_APPID"` | 你的小程序 AppID |
 | `miniprogram/app.js` | `var ENV_ID = 'YOUR_ENV_ID'` | 云开发环境 ID |
 
+> **也可以走自动化部署（推荐）。** 第 4、5 步（部署云函数、上传代码）已写进脚本。
+> 注意本机的**开发者工具自带 CLI 不可用**——Windows 保留了 TCP 段 `3713–3812`，
+> 而其桥接端口硬编码为 3799，必然 `EACCES`；因此改用官方 `miniprogram-ci`。
+>
+> ```bash
+> cd apps/mingbaika
+> npm install                        # 装 miniprogram-ci（只装一次）
+> node scripts/deploy.js check       # 先看还缺什么，它会逐项报出来
+> node scripts/deploy.js all 0.1.0 "首个可测版本"   # 云函数 + 上传代码
+> ```
+>
+> 脚本会**在上传前强制跑静态校验**，不通过就不许上传。完整分工、密钥与 IP 白名单配置、
+> 常见报错对照，见 **`docs/部署指南.md`**。
+> 云环境开通与建集合仍必须在控制台手点——那是账号权限，脚本替代不了。
+
 ### 2. 用开发者工具打开项目
 
 打开**开发者工具的「导入项目」**，目录选 `apps/mingbaika/`（**不是** `miniprogram/`）——因为 `project.config.json` 在这一层。
@@ -186,6 +205,9 @@ node apps/mingbaika/cloudfunctions/parseNotice/tests/pipeline-model.test.js
 
 # 小程序静态校验（JSON 合法性 / 页面完整性 / 组件路径 / JS 语法 / 事件绑定）
 node apps/mingbaika/scripts/check.js
+
+# 部署前置检查（AppID / ENV_ID / 密钥 / 云函数目录是否齐备）
+node apps/mingbaika/scripts/deploy.js check
 ```
 
 静态校验能拦住绝大部分「一打开就报错」的问题：JSON 写错、组件路径不存在、页面缺文件、事件绑定的方法在 JS 里根本不存在。
@@ -196,13 +218,17 @@ node apps/mingbaika/scripts/check.js
 
 ## 六、待办清单
 
-### 阻塞真实运行（必须人工做）
+### 阻塞真实运行（必须人工做，脚本无法代劳）
 
 - [ ] 填 `project.config.json` 的 **AppID**
 - [ ] 开通云开发，填 `app.js` 的 **ENV_ID**
-- [ ] 部署云函数 `parseNotice`
+- [ ] 公众平台下载 **代码上传密钥** `private.<appid>.key` 放到 `apps/mingbaika/` 根目录
+      （并在同页面配置 **IP 白名单**，否则 `miniprogram-ci` 无法上传）
 - [ ] 建集合 `notices`
 - [ ] 在云开发控制台确认 **`deepseek-v4-flash` 可用**
+
+> 其余（部署云函数、上传代码）已自动化：`node scripts/deploy.js all`。
+> 详见 **`docs/部署指南.md`**。
 
 ### 需要实测确认（我未验证，不算结论）
 

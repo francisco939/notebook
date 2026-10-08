@@ -116,10 +116,13 @@ scripts/mvn.sh clean package -DskipTests
 - [ ] **【工程已就绪，填两个值即可跑】** 详见 `apps/mingbaika/README.md`
       - [ ] 填 `project.config.json` 的 **AppID**
       - [ ] 开通云开发 → 填 `miniprogram/app.js` 的 **ENV_ID**
-      - [ ] 部署云函数 `parseNotice`（右键 → 「上传并部署：云端安装依赖」）
+      - [ ] 下载**代码上传密钥** `private.<appid>.key` 放到 `apps/mingbaika/` 根目录 + 配 **IP 白名单**
       - [ ] 建数据库集合 `notices`
+      - [ ] 跑 `node scripts/deploy.js all` 部署云函数并上传代码
+            （部署分工与排错见 `apps/mingbaika/docs/部署指南.md`）
       - [ ] 云开发控制台确认 `deepseek-v4-flash` 可用
             （待实测项 V1–V3 见 `apps/mingbaika/docs/AI接入选型.md`）
+- [ ] **【有审核周期，最先启动】** 配置《用户隐私保护指引》并声明「选择聊天文件」能力
 - [ ] 核实小程序后台**类目可选性**（工具类）
 - [ ] 实测群标识能力；不可用则班级档案降级为手动归类
 - [ ] 招募 ≥10 位 60 岁以上祖辈用户做可用性测试（决定评审「产品实用性」维度的说服力）
