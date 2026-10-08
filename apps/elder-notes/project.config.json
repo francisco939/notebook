@@ -34,7 +34,16 @@
   "condition": {},
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      { "type": "folder", "value": "node_modules" },
+      { "type": "folder", "value": "scripts" },
+      { "type": "folder", "value": "docs" },
+      { "type": "file", "value": "package.json" },
+      { "type": "file", "value": "package-lock.json" },
+      { "type": "file", "value": "deploy.config.json" },
+      { "type": "suffix", "value": ".key" },
+      { "type": "suffix", "value": ".md" }
+    ],
     "include": []
   },
   "editorSetting": {}
