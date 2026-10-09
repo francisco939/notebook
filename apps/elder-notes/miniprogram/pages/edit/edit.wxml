@@ -6,7 +6,7 @@
 
   要点：
    - 标签在输入框外面，不用 placeholder 承担说明（老人不知道 placeholder 会消失）[S17]
-   - 语音不自建 ASR，只引导用输入法话筒 [S8]
+   - 语音不自建 ASR，只引导长按键盘空格键说话（微信键盘原生语音）[S8]
    - 时间可空，不强制填写 [S6]
 -->
 <view class="page {{scaleClass}}">
@@ -39,9 +39,9 @@
     />
   </view>
 
-  <!-- 语音引导：不自建识别，引导用手机输入法自带的话筒 [S8] -->
+  <!-- 语音引导：不自建识别，引导长按键盘空格说话（微信键盘原生能力）[S8] -->
   <view class="voice-tip">
-    <text class="t-aux">💬 点键盘上的话筒，说话就能变成字</text>
+    <text class="t-aux">💬 长按键盘上的空格键说话，松开就变成字</text>
   </view>
 
   <view class="field-label">
