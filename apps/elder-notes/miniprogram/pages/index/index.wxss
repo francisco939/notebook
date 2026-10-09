@@ -1,9 +1,32 @@
-/* 首页局部样式。通用类（.btn/.card/.item/.t-*）都在 app.wxss。 */
+/* 首页局部样式。通用类（.btn/.card/.t-*）都在 app.wxss。
+   动效统一走 transform / opacity / background-color，避免真机掉帧。 */
 
+/* ---------- 页头 ---------- */
+.app-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--gap) var(--pad) 0;
+}
+.head-name { font-size: var(--fs-title); }
+.head-btn {
+  min-height: var(--tap-sm);
+  padding: 0 24rpx;
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-aux);
+  color: var(--c-text);
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+}
+.head-btn.hover { background: #EFEFEF; }
+
+/* ---------- 找一找 ---------- */
 .search-wrap { padding: var(--gap) var(--pad) 0; }
 
 .search-box {
-  min-height: var(--tap-sm);       /* 44pt 热区下限 [S2] */
+  min-height: var(--tap-sm);
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -13,10 +36,7 @@
   border-radius: var(--radius);
 }
 
-.search-icon {
-  font-size: var(--fs-aux);
-  margin-right: 12rpx;
-}
+.search-icon { font-size: var(--fs-aux); margin-right: 12rpx; }
 
 .search-input {
   flex: 1;
@@ -25,7 +45,6 @@
   color: var(--c-text);
 }
 
-/* placeholder 用深灰而不是系统浅灰——浅灰在户外看不清 [S17] */
 .search-ph { color: var(--c-aux); }
 
 .search-clear {
@@ -38,25 +57,200 @@
   color: var(--c-main);
 }
 
-.section-title {
-  padding: var(--gap-lg) var(--pad) var(--gap);
+/* ---------- 横向日历条 ---------- */
+.strip {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--gap) 0 var(--gap);
+  white-space: nowrap;
+}
+.strip-inner { display: inline-flex; padding: 0 var(--pad); }
+
+.day {
+  width: 112rpx;
+  min-height: 140rpx;
+  margin-right: 16rpx;
+  padding: 12rpx 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-card);
+  border: 2rpx solid var(--c-line);
+  border-radius: var(--radius);
+  transition: background-color .22s ease, border-color .22s ease, transform .18s ease;
+}
+.day.hover { transform: scale(0.96); }
+
+.day-week { font-size: var(--fs-aux); color: var(--c-aux); line-height: 1.3; }
+.day-num { font-size: var(--fs-title); color: var(--c-text); font-weight: 500; line-height: 1.2; }
+
+/* 有事件的小圆点：让"哪天有事"扫一眼就知道，不靠读字 */
+.day-dot {
+  width: 14rpx;
+  height: 14rpx;
+  margin-top: 8rpx;
+  border-radius: 50%;
+  background: var(--c-main);
 }
 
-.note-line {
-  margin-bottom: 8rpx;
-}
+.day-today { border-width: 4rpx; border-color: var(--c-main); }
+.day-today .day-num { color: var(--c-main); }
 
-.time-line {
+.day-on {
+  background: var(--c-main);
+  border-color: var(--c-main);
+}
+.day-on .day-week,
+.day-on .day-num { color: #FFFFFF; }
+.day-on .day-dot { background: #FFFFFF; }
+
+/* ---------- 只看某一天 ---------- */
+.filter-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  margin: 0 var(--pad) var(--gap);
+  padding: var(--gap);
+  background: var(--c-undo);
+  border: 2rpx solid var(--c-undo-line);
+  border-radius: var(--radius);
+}
+.filter-text { flex: 1; }
+.filter-btn {
+  min-height: var(--tap-sm);
+  padding: 0 28rpx;
+  display: flex;
+  align-items: center;
+  font-size: var(--fs-aux);
+  color: #FFFFFF;
+  background: var(--c-main);
+  border-radius: 12rpx;
+}
+.filter-btn.hover { background: var(--c-main-press); }
+
+/* ---------- 关卡头 ---------- */
+.level-head {
+  padding: var(--gap-lg) var(--pad) var(--gap);
+}
+.level-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.level-no { color: var(--c-main); margin-right: 20rpx; }
+.level-date { margin-right: 16rpx; }
+.level-rel {
+  padding: 2rpx 14rpx;
+  background: var(--c-main);
+  color: #FFFFFF;
+  border-radius: 8rpx;
 }
 
-/* "已过"标记：文字 + 边框，不只用颜色 [S2][S4] */
-.tag-overdue {
-  margin-left: 16rpx;
-  padding: 2rpx 12rpx;
-  border: 2rpx solid var(--c-danger);
-  border-radius: 8rpx;
-  color: var(--c-danger);
-  font-size: var(--fs-aux);
+/* 进度条：只动 width，GPU 友好 */
+.bar {
+  height: 16rpx;
+  margin: var(--gap) 0 12rpx;
+  background: var(--c-line);
+  border-radius: 999rpx;
+  overflow: hidden;
 }
+.bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--c-main);
+  border-radius: 999rpx;
+  transition: width .45s cubic-bezier(.4, 0, .2, 1), background-color .3s ease;
+}
+.bar-full { background: #639922; }
+
+.level-prog { display: block; }
+
+/* ---------- 事件卡片 ---------- */
+.quest-card {
+  min-height: var(--tap);
+  padding: var(--gap);
+  transition: background-color .28s ease, border-color .28s ease, transform .18s ease;
+}
+.quest-card.hover { transform: scale(0.985); }
+
+.q-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.q-title { flex: 1; }
+
+/* 状态徽章：必须带文字，不能只靠颜色 [S2][S4] */
+.q-badge {
+  margin-left: 16rpx;
+  padding: 4rpx 16rpx;
+  font-size: var(--fs-aux);
+  color: #3B6D11;
+  background: #EAF3DE;
+  border: 2rpx solid #639922;
+  border-radius: 999rpx;
+  animation: pop .3s ease;
+}
+.q-badge-skip {
+  color: #5F5E5A;
+  background: #F1EFE8;
+  border-color: #888780;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.q-desc {
+  display: block;
+  margin-top: 12rpx;
+}
+
+.q-meta { margin-top: 12rpx; }
+.q-author { display: block; }
+
+/* ---------- 卡片操作 ---------- */
+.q-actions {
+  display: flex;
+  margin-top: var(--gap);
+}
+.q-btn {
+  min-height: var(--tap-sm);
+  padding: 0 32rpx;
+  margin-right: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-aux);
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: background-color .2s ease, transform .15s ease;
+}
+.q-btn.hover { transform: scale(0.96); }
+
+.q-btn-done { background: #639922; color: #FFFFFF; }
+.q-btn-done.hover { background: #3B6D11; }
+
+.q-btn-skip {
+  background: var(--c-card);
+  color: var(--c-text);
+  border-color: var(--c-line);
+}
+.q-btn-skip.hover { background: #EFEFEF; }
+
+.q-btn-undo {
+  background: var(--c-card);
+  color: var(--c-aux);
+  border-color: var(--c-line);
+}
+.q-btn-undo.hover { background: #EFEFEF; }
+
+/* ---------- 卡片状态底色 ---------- */
+.q-done { background: #F2F7EA; border-color: #97C459; }
+.q-done .q-title { color: #3B6D11; }
+.q-skipped { background: var(--c-card); }
+.q-skipped .q-title { color: var(--c-aux); }

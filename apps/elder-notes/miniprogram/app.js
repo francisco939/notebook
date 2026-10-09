@@ -17,6 +17,10 @@ App({
   },
 
   onLaunch: function () {
+    // 一条记录都没有时铺几条示例事件，让"日历 / 关卡 / 完成态"第一次打开就看得见。
+    // 只在空库时执行一次，之后永不触发，不污染真实数据。
+    store.seedIfEmpty();
+
     var saved = store.getFontScale();
     var confirmed = !!store.get('scaleConfirmed', false);
 

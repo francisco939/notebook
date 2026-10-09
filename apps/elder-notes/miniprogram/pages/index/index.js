@@ -1,25 +1,33 @@
 'use strict';
 
 var store = require('../../utils/store.js');
-var time = require('../../utils/time.js');
+var quest = require('../../utils/quest.js');
 
 var app = getApp();
 var UNDO_MS = 10000; // 撤销条停留 10 秒 [S2] 充足操作时间
 
-/** 取正文首行作为列表标题（老人看的是第一行） */
-function titleOf(note) {
-  var c = (note.content || '').trim();
-  if (!c) return '(没写内容)';
-  var line = c.split('\n')[0].trim();
-  return line.length > 30 ? line.slice(0, 30) + '…' : line;
+var STATUS_TOAST = { done: '完成了', skipped: '已跳过', todo: '撤回了' };
+
+/** 取正文"首行之后"的部分作为描述，避免和标题重复显示 */
+function restOf(content) {
+  if (!content) return '';
+  var lines = String(content).trim().split('\n');
+  if (lines.length <= 1) return '';
+  return lines.slice(1).join('\n').trim();
 }
 
+/**
+ * 把一条 note 变成卡片要显示的形状。
+ * 老数据没有 title / status / author，这里一律给兜底值，不报错。
+ */
 function decorate(note) {
+  var hasTitle = !!note.title;
   return {
     id: note.id,
-    title: titleOf(note),
-    timeText: note.dueAt ? time.display(note.dueAt, note.hasTime) : (note.rawTime || ''),
-    overdue: time.isOverdue(note.dueAt)
+    title: quest.titleOf(note),
+    desc: hasTitle ? (note.content || '') : restOf(note.content),
+    author: note.author || '',
+    status: quest.statusOf(note)
   };
 }
 
@@ -38,19 +46,17 @@ function looseMatch(text, keyword) {
 Page({
   data: {
     scaleClass: 'scale-large',
-    showScaleTip: false,
     keyword: '',
-    todayList: [],
-    otherList: [],
+    strip: [],
+    levels: [],
+    filterKey: '',
+    filterLabel: '',
     undoTitle: ''
   },
 
   onLoad: function () {
     var scale = (app && app.globalData && app.globalData.scale) || 'large';
-    this.setData({
-      scaleClass: 'scale-' + scale,
-      showScaleTip: !(app && app.globalData && app.globalData.scaleConfirmed)
-    });
+    this.setData({ scaleClass: 'scale-' + scale });
   },
 
   onShow: function () {
@@ -62,7 +68,7 @@ Page({
     if (pending) {
       var n = store.getNote(pending);
       app.globalData.pendingUndoId = '';
-      this.showUndo(n ? titleOf(n) : '这条');
+      this.showUndo(n ? quest.titleOf(n) : '这条');
     } else {
       this.setData({ undoTitle: '' });
     }
@@ -77,17 +83,39 @@ Page({
 
   refresh: function () {
     var kw = this.data.keyword || '';
-    var all = store.list();
-    var today = [], other = [];
+    var filterKey = this.data.filterKey || '';
+    var now = Date.now();
 
-    all.forEach(function (n) {
-      var item = decorate(n);
-      if (kw && !looseMatch(n.content + ' ' + (n.rawTime || ''), kw)) return;
-      if (time.isDueToday(n.dueAt)) today.push(item);
-      else other.push(item);
+    var all = store.list();
+    if (kw) {
+      all = all.filter(function (n) {
+        return looseMatch((n.title || '') + (n.content || '') + ' ' + (n.author || ''), kw);
+      });
+    }
+
+    var levels = quest.buildLevels(all, now);
+
+    // 进度条：完成 + 跳过都算"已处理"
+    levels.forEach(function (lv) {
+      var handled = lv.done + lv.skipped;
+      lv.pct = lv.total ? Math.round(handled / lv.total * 100) : 0;
+      var items = lv.items.map(decorate);
+      lv.items = items;
     });
 
-    this.setData({ todayList: today, otherList: other });
+    var strip = quest.calendarStrip(now, 3, 10, levels.map(function (l) { return l.key; }));
+
+    var shown = levels;
+    var filterLabel = '';
+    if (filterKey) {
+      shown = levels.filter(function (l) { return l.key === filterKey; });
+      if (shown.length) {
+        var lb = shown[0].label;
+        filterLabel = lb.md + (lb.rel ? '（' + lb.rel + '）' : '');
+      }
+    }
+
+    this.setData({ levels: shown, strip: strip, filterLabel: filterLabel });
   },
 
   onSearch: function (e) {
@@ -97,6 +125,33 @@ Page({
 
   clearSearch: function () {
     this.setData({ keyword: '' });
+    this.refresh();
+  },
+
+  /** 点日历条：只看那一天；再点同一天 → 回到全部 */
+  pickDay: function (e) {
+    var k = e.currentTarget.dataset.k;
+    if (!k) return;
+    var next = (this.data.filterKey === k) ? '' : k;
+    this.setData({ filterKey: next });
+    wx.vibrateShort({ type: 'light', fail: function () {} });
+    this.refresh();
+  },
+
+  clearDay: function () {
+    this.setData({ filterKey: '' });
+    this.refresh();
+  },
+
+  /** 完成 / 跳过 / 撤销。用 catchtap 调用，不会冒泡到卡片打开详情。 */
+  setStatus: function (e) {
+    var id = e.currentTarget.dataset.id;
+    var s = e.currentTarget.dataset.s;
+    if (!id || !s) return;
+
+    store.setStatus(id, s);
+    wx.vibrateShort({ type: 'light', fail: function () {} });
+    wx.showToast({ title: STATUS_TOAST[s] || '好了', icon: 'none', duration: 900 });
     this.refresh();
   },
 
@@ -127,7 +182,7 @@ Page({
     if (id) store.restore(id);
     if (this._undoTimer) clearTimeout(this._undoTimer);
     this.setData({ undoTitle: '' });
-    wx.vibrateShort({ type: 'light', fail: function () {} }); // 触感确认 [S22]
+    wx.vibrateShort({ type: 'light', fail: function () {} });
     wx.showToast({ title: '找回来了', icon: 'none', duration: 1500 });
     this.refresh();
   }

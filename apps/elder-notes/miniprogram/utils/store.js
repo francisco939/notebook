@@ -74,8 +74,13 @@ function getNote(id) {
   return null;
 }
 
-/** 新增。返回新建的 note（写入失败时仍返回对象，保证 UI 不卡住）。 */
-function add(content, when) {
+/**
+ * 新增。返回新建的 note（写入失败时仍返回对象，保证 UI 不卡住）。
+ *
+ * extra 里的字段全部可选，且**全部是新增字段**（title / status / statusAt / author）。
+ * 老数据没有这些字段时按默认值处理，不得报错、不得清空 —— 体验版可能已有真实数据。
+ */
+function add(content, when, extra) {
   var now = Date.now();
   var note = {
     id: newId(),
@@ -85,12 +90,25 @@ function add(content, when) {
     dueAt: (when && when.dueAt) || null,
     createdAt: now,
     updatedAt: now,
-    deleted: false
+    deleted: false,
+    title: (extra && extra.title) || '',
+    status: (extra && extra.status) || 'todo',
+    statusAt: (extra && extra.statusAt) || null,
+    author: (extra && extra.author) || ''
   };
   var arr = loadRaw();
   arr.unshift(note);
   saveRaw(arr);
   return note;
+}
+
+/** 切换完成状态。status 为 'todo' 时 statusAt 归零，便于"撤销完成"。 */
+function setStatus(id, status) {
+  if (['todo', 'done', 'skipped'].indexOf(status) < 0) return null;
+  return update(id, {
+    status: status,
+    statusAt: status === 'todo' ? null : Date.now()
+  });
 }
 
 /** 局部更新。返回更新后的 note，找不到返回 null。 */
@@ -135,6 +153,56 @@ function purgeDeleted() {
 function getFontScale() { return getSetting('fontScale', ''); }
 function setFontScale(s) { return setSetting('fontScale', s); }
 
+/** 添加人名字。没有账号体系，就用本地一个名字代替 —— 零依赖方案。 */
+function getAuthor() { return getSetting('author', ''); }
+function setAuthor(name) { return setSetting('author', name || ''); }
+
+/* ---------------- 示例数据 ---------------- */
+
+/**
+ * 首次使用时铺几条示例事件，让"日历 + 关卡 + 完成态"当场可见。
+ * 只在**一条记录都没有**时执行一次，之后不再触发 —— 不污染真实数据。
+ */
+function seedIfEmpty() {
+  if (loadRaw().length > 0) return 0;
+
+  var DAY = 24 * 3600 * 1000;
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var base = today.getTime();
+
+  var samples = [
+    { off: 0,  title: '量血压',     desc: '早上起床后量一次，记下数值', author: '我',     status: 'done' },
+    { off: 0,  title: '吃降压药',   desc: '早饭后一片',                 author: '女儿',   status: 'todo' },
+    { off: 0,  title: '下楼散步',   desc: '小区走两圈就回来',           author: '我',     status: 'todo' },
+    { off: 1,  title: '去社区医院', desc: '带上医保卡和上次的结果',     author: '儿子',   status: 'todo' },
+    { off: -1, title: '交水电费',   desc: '已经交了，不用再管',         author: '女儿',   status: 'done' },
+    { off: -1, title: '老同学聚会', desc: '这次不去了，下次再约',       author: '我',     status: 'skipped' }
+  ];
+
+  var arr = [];
+  samples.forEach(function (s, i) {
+    var at = base + s.off * DAY + (10 + i) * 3600 * 1000;
+    arr.push({
+      id: newId(),
+      content: s.desc,
+      title: s.title,
+      rawTime: '',
+      hasTime: false,
+      dueAt: at,
+      createdAt: at,
+      updatedAt: at,
+      deleted: false,
+      status: s.status,
+      statusAt: s.status === 'todo' ? null : at,
+      author: s.author
+    });
+  });
+
+  saveRaw(arr);
+  return arr.length;
+}
+
 module.exports = {
   get: getSetting,
   set: setSetting,
@@ -142,9 +210,13 @@ module.exports = {
   getNote: getNote,
   add: add,
   update: update,
+  setStatus: setStatus,
   softDelete: softDelete,
   restore: restore,
   purgeDeleted: purgeDeleted,
   getFontScale: getFontScale,
-  setFontScale: setFontScale
+  setFontScale: setFontScale,
+  getAuthor: getAuthor,
+  setAuthor: setAuthor,
+  seedIfEmpty: seedIfEmpty
 };

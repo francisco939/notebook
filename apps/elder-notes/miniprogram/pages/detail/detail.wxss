@@ -9,10 +9,18 @@
   box-sizing: border-box;
 }
 
-/* 正文用最大字号展示——这是这一页唯一的目的 */
-.detail-content {
+/* 标题用最大字号展示——这是这一页唯一的目的 */
+.detail-title {
+  font-size: var(--fs-body);
   line-height: 1.6;
   white-space: pre-wrap;   /* 保留换行，老人分段写的东西要原样显示 */
+}
+
+.detail-desc {
+  display: block;
+  margin-top: var(--gap);
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 .when-row {

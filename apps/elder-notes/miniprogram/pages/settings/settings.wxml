@@ -25,6 +25,22 @@
     <text class="t-title check" wx:if="{{scale === 'xlarge'}}">✓ 正在用</text>
   </view>
 
+  <view class="field-label">
+    <text class="t-section">我是谁</text>
+    <text class="t-aux field-tip">（写一次，以后记东西自动带上）</text>
+  </view>
+  <view class="card">
+    <input
+      class="name-input"
+      value="{{author}}"
+      bindinput="onAuthor"
+      bindblur="saveAuthor"
+      placeholder="比如：女儿"
+      placeholder-class="name-ph"
+    />
+    <text class="t-aux about-note">记一条时不用每次重打，会自己填上。</text>
+  </view>
+
   <view class="field-label"><text class="t-section">关于</text></view>
   <view class="card">
     <view class="t-body">记得</view>

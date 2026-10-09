@@ -5,7 +5,9 @@
   "description": "记得 —— 面向老年人的极简记事本微信小程序（部署工具链）",
   "scripts": {
     "check": "node scripts/check.js",
-    "test": "node scripts/time.test.js",
+    "test": "node scripts/time.test.js && node scripts/quest.test.js",
+    "test:time": "node scripts/time.test.js",
+    "test:quest": "node scripts/quest.test.js",
     "deploy:check": "node scripts/deploy.js check",
     "deploy:preview": "node scripts/deploy.js preview",
     "deploy:upload": "node scripts/deploy.js upload"

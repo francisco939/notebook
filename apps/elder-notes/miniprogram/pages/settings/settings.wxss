@@ -35,3 +35,14 @@
   margin-top: 12rpx;
   display: block;
 }
+
+.field-tip { margin-left: 12rpx; }
+
+.name-input {
+  width: 100%;
+  height: var(--tap-sm);
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+/* placeholder 用深灰而不是系统浅灰——浅灰在户外看不清 [S17] */
+.name-ph { color: var(--c-aux); }

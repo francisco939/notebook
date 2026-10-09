@@ -105,16 +105,32 @@ var wxmlFiles = walk(MP, '.wxml');
 var tapCount = 0;
 wxmlFiles.forEach(function (f) {
   var src = fs.readFileSync(f, 'utf8');
-  // 粗筛：含 bindtap/catchtap 的标签起始行，向后看 3 行内是否出现 <text 或中文
   var lines = src.split('\n');
   lines.forEach(function (line, i) {
     if (!/bind(tap|touchstart)/.test(line)) return;
     tapCount++;
-    var chunk = lines.slice(i, i + 4).join('\n');
+
+    // 只看**标签体**（'>' 之后的内容），不能把属性行算进来：
+    // 属性里的 data-id="{{x.id}}" 会让几乎所有列表项误判为"有文字"。
+    // 标签常常跨多行展开（bindtap 在第一行、文字在十行之后），
+    // 所以要先找到这个标签结束在哪一行，再从那儿向后取内容。
+    var body = '';
+    var gt = line.indexOf('>');
+    if (gt >= 0) {
+      body = line.slice(gt + 1);
+      if (!body.trim()) body = lines.slice(i + 1, i + 7).join('\n');
+    } else {
+      var end = i;
+      while (end < lines.length && lines[end].indexOf('>') < 0) end++;
+      var endLine = end < lines.length ? lines[end] : '';
+      var egt = endLine.indexOf('>');
+      body = (egt >= 0 ? endLine.slice(egt + 1) : '') + '\n' + lines.slice(end + 1, end + 7).join('\n');
+    }
+
     // 有文字的三种形态：<text> 标签、字面中文、{{}} 插值（列表项通常是插值）
-    var hasText = /<text/.test(chunk) ||
-      /[一-龥]/.test(chunk.replace(/<[^>]*>/g, '')) ||
-      /\{\{[^}]+\}\}/.test(chunk);
+    var hasText = /<text/.test(body) ||
+      /[一-龥]/.test(body.replace(/<[^>]*>/g, '')) ||
+      /\{\{[^}]+\}\}/.test(body);
     if (!hasText) {
       warns.push(rel(f) + ':' + (i + 1) + ' 可点元素附近没看到文字，确认是不是纯图标按钮');
     }

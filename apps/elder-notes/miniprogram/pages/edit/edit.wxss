@@ -16,10 +16,20 @@
   box-sizing: border-box;
 }
 
-/* 输入框固定高度，不随内容伸缩——老人写多写少，按钮位置不变 */
+/* 标题：一句话说完的事，单行即可 */
+.title-input {
+  width: 100%;
+  height: var(--tap-sm);
+  font-size: var(--fs-body);
+  color: var(--c-text);
+  line-height: 1.5;   /* [S2] 行距底线 1.3 */
+}
+
+/* 描述现在可写可不写（标题才是主角），所以改成自适应高度，
+   不写的时候不占一大块空白 */
 .content-input {
   width: 100%;
-  height: 420rpx;
+  min-height: 200rpx;
   font-size: var(--fs-body);
   color: var(--c-text);
   line-height: 1.5;   /* [S2] 行距底线 1.3 */
@@ -44,6 +54,13 @@
   color: var(--c-text);
 }
 .when-ph { color: var(--c-aux); }
+
+.author-input {
+  flex: 1;
+  height: var(--tap-sm);
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
 
 .voice-tip {
   padding: var(--gap) var(--pad) 0;

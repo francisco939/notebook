@@ -1,6 +1,8 @@
 <!--
   记一页 / 改一页（同一页两种模式）
-  结构依据 docs/需求与设计说明.md §5.3
+
+  家人随手记一条的风格：**标题一句话说完，描述可写可不写**。
+  添加人自动带入上次填过的名字，不用每次重打 —— 这是"快速"的关键。
 
   要点：
    - 标签在输入框外面，不用 placeholder 承担说明（老人不知道 placeholder 会消失）[S17]
@@ -9,7 +11,21 @@
 -->
 <view class="page {{scaleClass}}">
 
-  <view class="field-label"><text class="t-section">要记什么？</text></view>
+  <view class="field-label"><text class="t-section">什么事？</text></view>
+  <view class="input-card">
+    <input
+      class="title-input"
+      value="{{title}}"
+      bindinput="onTitle"
+      placeholder=""
+      cursor-spacing="40"
+    />
+  </view>
+
+  <view class="field-label">
+    <text class="t-section">要说点什么？</text>
+    <text class="t-aux field-tip">（可以不填）</text>
+  </view>
   <view class="input-card">
     <textarea
       class="content-input"
@@ -19,6 +35,7 @@
       show-confirm-bar="{{false}}"
       cursor-spacing="40"
       placeholder=""
+      auto-height
     />
   </view>
 
@@ -28,7 +45,7 @@
   </view>
 
   <view class="field-label">
-    <text class="t-section">什么时候？</text>
+    <text class="t-section">哪一天？</text>
     <text class="t-aux field-tip">（可以不填）</text>
   </view>
   <view class="input-card-sm">
@@ -55,6 +72,21 @@
   </view>
   <view class="parsed-hint" wx:elif="{{showUnparsed}}">
     <text class="t-aux">时间没看懂，没关系，照样能记下来。</text>
+  </view>
+
+  <view class="field-label">
+    <text class="t-section">谁记的？</text>
+    <text class="t-aux field-tip">（写一次，下次自动带上）</text>
+  </view>
+  <view class="input-card-sm">
+    <input
+      class="author-input"
+      value="{{author}}"
+      bindinput="onAuthor"
+      placeholder="比如：女儿"
+      placeholder-class="when-ph"
+      cursor-spacing="40"
+    />
   </view>
 
   <view class="btn btn-main btn-fixed" bindtap="save" hover-class="hover">

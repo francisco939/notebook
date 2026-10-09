@@ -1,16 +1,29 @@
 <!--
-  首页：看 + 记，只做这两件事。
-  结构依据 docs/需求与设计说明.md §5.2
+  首页：每日闯关 · 日历
+
+  结构（从上到下）：
+    1. 找一找（搜索）—— 保留原有能力，不因为改版而丢功能
+    2. 横向日历条 —— 选日期，点一下只看那一天，再点一下回到全部
+    3. 关卡列表 —— 一天一关，关内是当天的事件卡片
+    4. 底部「＋ 记一条」 + 撤销条
+
+  设计约束（改这个文件前先看）：
+    - 字号、热区一律走 app.wxss 的变量，不写死小值
+    - 状态**不只靠颜色**，必须有文字（已完成 / 已跳过）[S2][S4]
+    - 每个可点元素都带文字，不做纯图标按钮 [S12]
+    - 不用多指手势 [S17]，全部单击可达
 -->
 <view class="page {{scaleClass}}">
 
-  <!-- 首启调字号提示条：不弹窗打断，只是给个出口 [S10] -->
-  <view class="tip-bar" wx:if="{{showScaleTip}}">
-    <view class="tip-text">字太小看不清？可以去调大</view>
-    <view class="tip-close" bindtap="goSettings" hover-class="hover">去调</view>
+  <!-- 页头：左边是名字，右边是设置入口。
+       原来只有首启那一条小提示条能进设置，而它指望"不会探索"的老人主动发现，
+       已被判定无效并删除 —— 这里补一个常驻、带文字的出口。 -->
+  <view class="app-head">
+    <text class="t-title head-name">记得</text>
+    <view class="head-btn" bindtap="goSettings" hover-class="hover">字的大小</view>
   </view>
 
-  <!-- 找一找（搜索） -->
+  <!-- 找一找 -->
   <view class="search-wrap">
     <view class="search-box">
       <text class="search-icon">🔍</text>
@@ -26,50 +39,101 @@
     </view>
   </view>
 
-  <!-- 今天要做的事：小程序里唯一 100% 可靠的提醒形态 [S7] -->
-  <block wx:if="{{!keyword}}">
-    <view wx:if="{{todayList.length > 0}}">
-      <view class="section-title"><text class="t-section">今天要做的事</text></view>
+  <!-- 横向日历条。横滚用 white-space:nowrap + inline-flex 的经典写法，
+       不依赖 enable-flex（该属性在不同基础库下行为有差异，容易踩坑）。 -->
+  <scroll-view class="strip" scroll-x>
+    <view class="strip-inner">
       <view
-        wx:for="{{todayList}}"
-        wx:key="id"
-        class="card item"
-        data-id="{{item.id}}"
-        bindtap="openDetail"
+        wx:for="{{strip}}"
+        wx:key="key"
+        class="day {{item.isToday ? 'day-today' : ''}} {{item.hasEvent ? 'day-has' : ''}} {{filterKey === item.key ? 'day-on' : ''}}"
+        data-k="{{item.key}}"
+        bindtap="pickDay"
         hover-class="hover"
       >
-        <view class="t-title note-line">{{item.title}}</view>
-        <view class="t-aux time-line" wx:if="{{item.timeText || item.overdue}}">
-          <text wx:if="{{item.timeText}}">{{item.timeText}}</text>
-          <!-- 状态不只靠颜色区分，必须有文字 [S2][S4] -->
-          <text wx:if="{{item.overdue}}" class="tag-overdue">已过</text>
-        </view>
+        <text class="day-week">{{item.rel || item.week}}</text>
+        <text class="day-num">{{item.d}}</text>
+        <view class="day-dot" wx:if="{{item.hasEvent}}"></view>
       </view>
     </view>
-  </block>
+  </scroll-view>
 
-  <!-- 记过的 -->
-  <view wx:if="{{otherList.length > 0}}">
-    <view class="section-title" wx:if="{{!keyword}}"><text class="t-section">记过的</text></view>
+  <!-- 只看某一天时的提示，给一个明确的"退回去"出口 -->
+  <view class="filter-bar" wx:if="{{filterKey}}">
+    <text class="t-aux filter-text">只看 {{filterLabel}}</text>
+    <view class="filter-btn" bindtap="clearDay" hover-class="hover">看全部</view>
+  </view>
+
+  <!-- 关卡列表 -->
+  <block wx:for="{{levels}}" wx:key="key" wx:for-item="lv">
+
+    <view class="level-head">
+      <view class="level-row">
+        <text class="t-section level-no">第 {{lv.level}} 关</text>
+        <text class="t-title level-date">{{lv.label.md}} {{lv.label.week}}</text>
+        <text class="t-aux level-rel" wx:if="{{lv.label.rel}}">{{lv.label.rel}}</text>
+      </view>
+
+      <view class="bar">
+        <view class="bar-fill {{lv.allDone ? 'bar-full' : ''}}" style="width: {{lv.pct}}%"></view>
+      </view>
+
+      <text class="t-aux level-prog">
+        <block wx:if="{{lv.allDone}}">这一关都处理完了</block>
+        <block wx:else>{{lv.done}} / {{lv.total}} 已完成</block>
+      </text>
+    </view>
+
     <view
-      wx:for="{{otherList}}"
+      wx:for="{{lv.items}}"
       wx:key="id"
-      class="card item"
-      data-id="{{item.id}}"
+      wx:for-item="it"
+      class="card quest-card q-{{it.status}}"
+      data-id="{{it.id}}"
       bindtap="openDetail"
       hover-class="hover"
     >
-      <view class="t-title note-line">{{item.title}}</view>
-      <view class="t-aux time-line" wx:if="{{item.timeText || item.overdue}}">
-        <text wx:if="{{item.timeText}}">{{item.timeText}}</text>
-        <text wx:if="{{item.overdue}}" class="tag-overdue">已过</text>
+      <view class="q-top">
+        <text class="t-title q-title">{{it.title}}</text>
+        <text class="q-badge" wx:if="{{it.status === 'done'}}">已完成</text>
+        <text class="q-badge q-badge-skip" wx:elif="{{it.status === 'skipped'}}">已跳过</text>
+      </view>
+
+      <text class="t-aux q-desc" wx:if="{{it.desc}}">{{it.desc}}</text>
+
+      <view class="q-meta">
+        <text class="t-aux q-author" wx:if="{{it.author}}">{{it.author}} 记的</text>
+      </view>
+
+      <!-- 阻止冒泡用 catchtap，否则会顺带触发卡片的打开详情 -->
+      <view class="q-actions">
+        <view
+          wx:if="{{it.status === 'todo'}}"
+          class="q-btn q-btn-done"
+          data-id="{{it.id}}" data-s="done"
+          catchtap="setStatus" hover-class="hover"
+        >完成了</view>
+        <view
+          wx:if="{{it.status === 'todo'}}"
+          class="q-btn q-btn-skip"
+          data-id="{{it.id}}" data-s="skipped"
+          catchtap="setStatus" hover-class="hover"
+        >跳过</view>
+        <view
+          wx:else
+          class="q-btn q-btn-undo"
+          data-id="{{it.id}}" data-s="todo"
+          catchtap="setStatus" hover-class="hover"
+        >撤销</view>
       </view>
     </view>
-  </view>
 
-  <!-- 空状态：明确告诉老人下一步干什么 [S12] -->
-  <view wx:if="{{todayList.length === 0 && otherList.length === 0}}" class="t-empty">
+  </block>
+
+  <!-- 空状态 -->
+  <view wx:if="{{levels.length === 0}}" class="t-empty">
     <block wx:if="{{keyword}}">没有找到。换个词再试试。</block>
+    <block wx:elif="{{filterKey}}">这一天还没有记东西。点下面这个大按钮，记一条。</block>
     <block wx:else>还没有记过东西。点下面这个大按钮，记第一条。</block>
   </view>
 

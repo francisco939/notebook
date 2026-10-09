@@ -2,6 +2,7 @@
 
 var store = require('../../utils/store.js');
 var time = require('../../utils/time.js');
+var quest = require('../../utils/quest.js');
 
 var app = getApp();
 
@@ -9,7 +10,10 @@ Page({
   data: {
     scaleClass: 'scale-large',
     id: '',
+    title: '',
     content: '',
+    author: '',
+    status: 'todo',
     timeText: '',
     overdue: false
   },
@@ -26,10 +30,22 @@ Page({
       return;
     }
 
+    // 老数据没有 title：正文首行当标题，其余当描述（与 edit 页一致）
+    var t = n.title || '';
+    var c = n.content || '';
+    if (!t && c) {
+      var lines = String(c).trim().split('\n');
+      t = lines[0].trim();
+      c = lines.slice(1).join('\n').trim();
+    }
+
     this.setData({
       scaleClass: 'scale-' + scale,
       id: id,
-      content: n.content || '(没写内容)',
+      title: t || quest.titleOf(n),
+      content: c,
+      author: n.author || '',
+      status: quest.statusOf(n),
       timeText: n.dueAt ? time.display(n.dueAt, n.hasTime) : (n.rawTime || ''),
       overdue: time.isOverdue(n.dueAt)
     });
